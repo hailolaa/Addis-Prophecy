@@ -1,7 +1,9 @@
 {
+    "version": 2,
+    "public": true,
     "rewrites": [
         {
-            "source": "/api/:path*",
+            "source": "/api/(.*)",
             "destination": "/api/index.py"
         }
     ]
