@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Debugger</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #1e1e1e;
+            color: #0f0;
+            padding: 2rem;
+        }
+
+        .box {
+            border: 1px solid #333;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: #000;
+        }
+
+        h2 {
+            color: #fff;
+            border-bottom: 1px solid #333;
+            padding-bottom: 0.5rem;
+        }
+
+        .error {
+            color: #f55;
+        }
+
+        .success {
+            color: #5f5;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            background: #333;
+            color: white;
+            border: none;
+            font-family: inherit;
+        }
+
+        button:hover {
+            background: #555;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🛠️ Vercel API Debugger</h1>
+
+    <div class="box">
+        <h2>1. Metadata Endpoint Check</h2>
+        <p>URL: <code>/api/metadata/housing</code></p>
+        <button onclick="checkMetadata()">Test Connectivity</button>
+        <div id="metaResult"></div>
+    </div>
+
+    <div class="box">
+        <h2>2. Prediction Endpoint Check</h2>
+        <p>URL: <code>/api/predict/addis-house</code></p>
+        <button onclick="checkPrediction()">Test Prediction</button>
+        <div id="predResult"></div>
+    </div>
+
+    <script>
+        async function checkMetadata() {
+            const out = document.getElementById('metaResult');
+            out.innerHTML = "Generated request... Waiting...";
+            try {
+                const res = await fetch('/api/metadata/housing');
+                const text = await res.text();
+
+                if (res.ok) {
+                    try {
+                        const json = JSON.parse(text);
+                        out.innerHTML = `<p class="success">✅ SUCCESS (Status: ${res.status})</p>`;
+                        out.innerHTML += `<pre>${JSON.stringify(json, null, 2)}</pre>`;
+                    } catch (e) {
+                        out.innerHTML = `<p class="error">⚠️ RECEIVED TEXT BUT NOT JSON</p><pre>${text}</pre>`;
+                    }
+                } else {
+                    out.innerHTML = `<p class="error">❌ ERROR (Status: ${res.status})</p><pre>${text}</pre>`;
+                }
+            } catch (e) {
+                out.innerHTML = `<p class="error">🔥 NETWORK ERROR: ${e.message}</p>`;
+            }
+        }
+
+        async function checkPrediction() {
+            const out = document.getElementById('predResult');
+            out.innerHTML = "Generated request... Waiting...";
+
+            const payload = {
+                "Location": "Bole",
+                "Type": "Villa",
+                "Area": 300,
+                "Bedrooms": 4,
+                "Bathrooms": 3,
+                "Age": 5,
+                "Distance_to_Center": 2.5
+            };
+
+            try {
+                const res = await fetch('/api/predict/addis-house', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const text = await res.text();
+
+                if (res.ok) {
+                    out.innerHTML = `<p class="success">✅ SUCCESS (Status: ${res.status})</p>`;
+                    out.innerHTML += `<pre>${text}</pre>`;
+                } else {
+                    out.innerHTML = `<p class="error">❌ ERROR (Status: ${res.status})</p><pre>${text}</pre>`;
+                }
+            } catch (e) {
+                out.innerHTML = `<p class="error">🔥 NETWORK ERROR: ${e.message}</p>`;
+            }
+        }
+    </script>
+</body>
+
+</html>
