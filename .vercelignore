@@ -4,11 +4,11 @@ README.md
 train_addis.py
 generate_addis_data.py
 api/models/*.pkl
-models/
-data/
-backend/
-titanic/
-iris/
+/models/
+/data/
+/backend/
+/titanic/
+/iris/
 *.csv
 __pycache__
 .venv
