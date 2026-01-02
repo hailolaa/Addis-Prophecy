@@ -1,0 +1,40 @@
+{
+    "intercept": -51693882.9555008,
+    "coefficients": [
+        -811210.6279117778,
+        40614629.43382757,
+        796603.4745228167,
+        2188659.6930379374,
+        6154576.047790568,
+        -83603.98754882407,
+        -5356597.857940737
+    ],
+    "feature_names": [
+        "Location_Enc",
+        "Type_Enc",
+        "Area",
+        "Bedrooms",
+        "Bathrooms",
+        "Age",
+        "Distance_to_Center"
+    ],
+    "locations": [
+        "Akaki",
+        "Ayat",
+        "Bole",
+        "CMC",
+        "Gullele",
+        "Jemo",
+        "Kazanchis",
+        "Lebu",
+        "Old Airport",
+        "Piassa",
+        "Sarbet",
+        "Summit"
+    ],
+    "types": [
+        "Apartment",
+        "Condominium",
+        "Villa"
+    ]
+}

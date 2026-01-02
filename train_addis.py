@@ -1,30 +1,39 @@
 import pandas as pd
 import numpy as np
-import joblib
+import json
 import os
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import LabelEncoder
 
-MODEL_DIR = 'd:/Project/Ml/ethio_ml_hub/models/'
-DATA_DIR = 'd:/Project/Ml/ethio_ml_hub/data/'
+# Use relative paths for portability
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(BASE_DIR, 'api', 'models')
+DATA_DIR = os.path.join(BASE_DIR, 'api', 'data')
 
-def train_addis_housing_refined():
-    print("Training Refined Addis Housing model...")
+def train_addis_housing_lite():
+    print("Training Lite Addis Housing model (JSON output)...")
+    
+    # Check both potential data locations
     csv_path = os.path.join(DATA_DIR, 'addis_housing.csv')
     if not os.path.exists(csv_path):
-        print(f"Error: {csv_path} not found.")
+        # Fallback to root data dir if api/data doesn't exist yet
+        csv_path = os.path.join(BASE_DIR, 'data', 'addis_housing.csv')
+        
+    if not os.path.exists(csv_path):
+        print(f"Error: {csv_path} not found. Please run generate_addis_data.py first.")
         return
         
     df = pd.read_csv(csv_path)
     
-    # Encoders for categorical features
+    # Encoders
     le_loc = LabelEncoder()
-    df['Location'] = le_loc.fit_transform(df['Location'])
+    df['Location_Enc'] = le_loc.fit_transform(df['Location'])
     
     le_type = LabelEncoder()
-    df['Type'] = le_type.fit_transform(df['Type'])
+    df['Type_Enc'] = le_type.fit_transform(df['Type'])
     
-    X = df.drop('Price', axis=1)
+    # Features: Location, Type, Area, Bedrooms, Bathrooms, Age, Distance
+    X = df[['Location_Enc', 'Type_Enc', 'Area', 'Bedrooms', 'Bathrooms', 'Age', 'Distance_to_Center']]
     y = df['Price']
     
     model = LinearRegression()
@@ -32,18 +41,21 @@ def train_addis_housing_refined():
     
     if not os.path.exists(MODEL_DIR): os.makedirs(MODEL_DIR)
     
-    joblib.dump(model, os.path.join(MODEL_DIR, 'addis_house_model.pkl'))
-    joblib.dump(le_loc, os.path.join(MODEL_DIR, 'addis_location_encoder.pkl'))
-    joblib.dump(le_type, os.path.join(MODEL_DIR, 'addis_type_encoder.pkl'))
-    
-    # Also save metadata for the frontend
-    metadata = {
-        'locations': list(le_loc.classes_),
-        'types': list(le_type.classes_)
+    # Export weights and metadata to JSON for a dependency-free backend
+    model_data = {
+        'intercept': float(model.intercept_),
+        'coefficients': model.coef_.tolist(),
+        'feature_names': X.columns.tolist(),
+        'locations': le_loc.classes_.tolist(),
+        'types': le_type.classes_.tolist()
     }
-    joblib.dump(metadata, os.path.join(MODEL_DIR, 'housing_metadata.pkl'))
     
-    print("Refined Addis Housing model and encoders saved.")
+    json_path = os.path.join(MODEL_DIR, 'housing_model_lite.json')
+    with open(json_path, 'w') as f:
+        json.dump(model_data, f, indent=4)
+    
+    print(f"LITE model saved to {json_path}")
+    print("This JSON model does not require sklearn for prediction!")
 
 if __name__ == "__main__":
-    train_addis_housing_refined()
+    train_addis_housing_lite()
