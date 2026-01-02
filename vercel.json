@@ -1,6 +1,4 @@
 {
-    "buildCommand": "python train_addis.py",
-    "outputDirectory": ".",
     "rewrites": [
         {
             "source": "/api/:path*",
