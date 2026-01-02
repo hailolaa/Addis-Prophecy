@@ -44,22 +44,18 @@ class AddisHouseData(BaseModel):
     Age: int
     Distance_to_Center: float
 
-@app.get("/api")
+@app.get("/")
 def read_root():
     return {"message": "AddisProphecy LITE API is online"}
 
-@app.get("/api/metadata/housing") # Match the rewrite in vercel.json
+@app.get("/metadata/housing")
 def get_housing_metadata():
     return {
         "locations": model_data.get("locations", []),
         "types": model_data.get("types", [])
     }
 
-@app.get("/metadata/housing") # Local fallback
-def get_metadata_local():
-    return get_housing_metadata()
-
-@app.post("/api/predict/addis-house")
+@app.post("/predict/addis-house")
 def predict_house(data: AddisHouseData):
     try:
         # 1. Encode Location
@@ -98,10 +94,6 @@ def predict_house(data: AddisHouseData):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/predict/addis-house") # Local fallback
-def predict_local(data: AddisHouseData):
-    return predict_house(data)
 
 if __name__ == "__main__":
     import uvicorn
