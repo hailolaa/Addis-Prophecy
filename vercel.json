@@ -1,6 +1,8 @@
 {
-    "version": 2,
-    "public": true,
+    "framework": null,
+    "buildCommand": null,
+    "outputDirectory": "public",
+    "installCommand": "pip install -r requirements.txt",
     "rewrites": [
         {
             "source": "/api/(.*)",
