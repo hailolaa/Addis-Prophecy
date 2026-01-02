@@ -3,16 +3,14 @@
         {
             "source": "/api/(.*)",
             "destination": "/api/index.py"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/",
-            "dest": "/frontend/index.html"
         },
         {
-            "src": "/(.*)",
-            "dest": "/frontend/$1"
+            "source": "/",
+            "destination": "/frontend/index.html"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/frontend/$1"
         }
     ]
 }
