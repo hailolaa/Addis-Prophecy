@@ -62,11 +62,17 @@ class AddisHouseData(BaseModel):
     Age: int
     Distance_to_Center: float
 
+
+# --- ROUTES ---
+# robustly handle both /api prefixed (Vercel rewrite) and non-prefixed paths
+
 @app.get("/")
+@app.get("/api")
 def read_root():
     return {"message": "AddisProphecy LITE API is online", "status": "active"}
 
 @app.get("/metadata/housing")
+@app.get("/api/metadata/housing")
 def get_housing_metadata():
     return {
         "locations": model_data.get("locations", DEFAULT_LOCATIONS),
@@ -74,6 +80,7 @@ def get_housing_metadata():
     }
 
 @app.post("/predict/addis-house")
+@app.post("/api/predict/addis-house")
 def predict_house(data: AddisHouseData):
     try:
         # Default fallback if weights are missing (avoid crash)
