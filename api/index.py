@@ -44,7 +44,7 @@ class AddisHouseData(BaseModel):
     Age: int
     Distance_to_Center: float
 
-@app.get("/")
+@app.get("/api")
 def read_root():
     return {"message": "AddisProphecy LITE API is online"}
 
